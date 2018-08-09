@@ -110,6 +110,7 @@ def menu_save():
 class outlook_web_access:
     
     def __init__(self, program_args):
+        self.account = None
         self.server = ''
         self.domain = ''
         self.email = ''
@@ -128,13 +129,17 @@ class outlook_web_access:
 
         if ret == 0:
 
-            self.connect_owa()
-
             if program_args.daemon:
                 print("Not Implemented")
                 sys.exit(2)
             else:
-                self.menu_main()
+                try:
+                    self.connect_owa()
+                    self.menu_main()
+                except Exception as ex:
+                    print(ex)
+                    pause()
+                    self.menu_account()
 
     def connect_owa(self):
         
@@ -162,6 +167,9 @@ class outlook_web_access:
         self.tz = EWSTimeZone.localzone()
 
     def get_unread_email(self):
+
+        if self.account == None:
+            self.connect_owa()
 
         self.account.inbox.total_count
         self.account.inbox.child_folder_count
