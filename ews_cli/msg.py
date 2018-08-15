@@ -22,10 +22,12 @@ class header:
         self.author = msg.author.email_address
         self.subject = msg.subject
 
-        for mb in msg.to_recipients:
-            self.to_list.append(mb.email_address)
+        if msg.to_recipients != None:
 
-        self.to_email = self.sep.join(self.to_list)
+            for mb in msg.to_recipients:
+                self.to_list.append(mb.email_address)
+
+            self.to_email = self.sep.join(self.to_list)
 
         if msg.cc_recipients != None:
 
