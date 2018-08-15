@@ -116,8 +116,13 @@ class FilterCollection:
             if m.to_email != '':
                 if len(rule.to_list) > 0:
                     for to_email in m.to_or_cc_list:
-                        if to_email in ', '.join(rule.to_list):
-                            return rule.folder
+                        for entry in rule.to_list:
+                            if rule.partial == False:
+                                if entry == to_email:
+                                    return rule.folder
+                            else:
+                                if entry in to_email:
+                                    return rule.folder
             # Reply-To:
             if m.reply_to != '':
                 if rule.reply_to != '':
