@@ -2,7 +2,7 @@
 
 import sys
 import argparse
-from ews_cli import ews
+from . import ews
 
 def main():
     parser = argparse.ArgumentParser(description=('Outlook Web Access CLI Client'))
