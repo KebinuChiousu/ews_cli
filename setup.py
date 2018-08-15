@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(name='ews-cli',
-      version='0.1.0.0',
+      version='0.1.0.1',
       description='Filter email via EWS endpoint',
-      url='https://github.com/KebinuChiousu/python-owa-filter',
-      download_url='https://github.com/KebinuChiousu/ews_cli/archive/v0.1.0.0.tar.gz',
+      url='https://github.com/KebinuChiousu/ews_cli',
+      download_url='https://github.com/KebinuChiousu/ews_cli/archive/v0.1.0.1.tar.gz',
       author='Kevin Meredith',
       author_email='kevin@meredithkm.info',
       license='MIT',
