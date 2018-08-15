@@ -4,22 +4,12 @@ from . import util, msg
 
 class RuleFilter:
 
-    def __init__(self):
-        self.name = ''
-        self.folder = ''
-        self.sender = ''
-        self.author = ''
-        self.to_list = []
-        self.reply_to = []
-        self.subject = ''
-        self.partial = False
-
-    def __init__(self, name, folder, sender, author, to_list, reply_to, subject, partial):
+    def __init__(self, name, folder, sender, author, to, reply_to, subject, partial):
         self.name = name
         self.folder = folder
         self.sender = sender
         self.author = author
-        self.to_list = to_list
+        self.to = to
         self.reply_to = reply_to
         self.subject = subject
         self.partial = partial
@@ -41,12 +31,8 @@ class FilterCollection:
     def __len__(self):
         return len(self.filters)
 
-    def add_filter(rule):
-        self.filters.append(rule)
-
     def add_filter( self, name, folder, sender='', author='', to='', reply_to='', subject='', partial=False):
-        to_list = to.split(';')
-        f = RuleFilter(name,folder,sender,author,to_list,reply_to,subject,partial)
+        f = RuleFilter(name,folder,sender,author,to,reply_to,subject,partial)
         self.filters.append(f)
 
     def load_rules(self):
@@ -95,7 +81,7 @@ class FilterCollection:
 
             header['sender'] = rule.sender
             header['from'] = rule.author
-            header['to'] = ';'.join(rule.to_list)
+            header['to'] = rule.to
             header['reply_to'] = rule.reply_to
             header['subject'] = rule.subject
 
@@ -111,7 +97,6 @@ class FilterCollection:
         if len(flt) > 0:
             cfg = util.get_config("filters.yaml")
             stream = open(cfg, 'w')
-            print(yaml.dump(flt), flush=True)
             yaml.dump(flt, stream)
 
     def process_msg(self, item):
@@ -139,9 +124,10 @@ class FilterCollection:
                             return rule.folder
             # To: or CC:
             if m.to_email != '':
-                if len(rule.to_list) > 0:
+                if rule.to != '':
                     for to_email in m.to_or_cc_list:
-                        for entry in rule.to_list:
+                        to_list = rule.to.split(';')
+                        for entry in to_list:
                             if rule.partial == False:
                                 if entry == to_email:
                                     return rule.folder

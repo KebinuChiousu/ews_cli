@@ -21,7 +21,7 @@ def menu_main(owa):
         if ret == 0:
             owa.filter_mail()
             util.pause()
-        if ret == 1:
+        elif ret == 1:
             menu_rules(owa)
         elif ret == 2:
             owa.show_unread_count()
@@ -55,32 +55,32 @@ def menu_rules(owa):
 
         ret = util.submenu(menu, "Filtering Rules")
 
-        if ret == "Add Rule"
+        if ret == "Add Rule":
             menu_add_filter(owa)
-        if ret == "Edit Rules":
+        elif ret == "Edit Rules":
             menu_show_filter(owa)
-        if ret == "Save Rules":
+        elif ret == "Save Rules":
             owa.filters.save_rules()
-        if ret == "Main Menu":
+        elif ret == "Main Menu":
             menu_main(owa)
         else:
             print("Invalid Option!")
             util.pause()
 
-def menu_add_filter(owa)
+def menu_add_filter(owa):
+
+    rule = rules.RuleFilter('','','','','','','',False)
 
     while True:
 
         _=os.system("clear")
         menu = []
 
-        rule = RuleFilter()
-
         menu = [ util.get_entry('Name    : {0}',rule.name), 
                  util.get_entry('Folder  : {0}',rule.folder), 
                  util.get_entry('Sender  : {0}',rule.sender), 
                  util.get_entry('From    : {0}',rule.author), 
-                 util.get_entry('To      : {0}',';'.join(rule.to_list)), 
+                 util.get_entry('To      : {0}',rule.to)), 
                  util.get_entry('Reply-To: {0}',rule.reply_to),
                  util.get_entry('Subject : {0}',rule.subject),
                  util.get_entry('Match   : {0}',get_match(rule.partial)),
@@ -90,12 +90,20 @@ def menu_add_filter(owa)
 
         ret = util.submenu(menu,"Add Rule",True)
 
-        update_rule(rule,ret)
+        rule = update_rule(owa, rule,ret)
 
         if ret == 8:
-            owa.filters.add_filter(rule)
+            owa.filters.add_filter( rule.name,
+                                    rule.folder,
+                                    rule.sender,
+                                    rule.author,
+                                    rule.to,
+                                    rule.reply_to,
+                                    rule.subject,
+                                    rule.partial
+                                  )
             menu_rules(owa)
-        if ret == 9
+        if ret == 9:
             menu_rules(owa)
 
 def get_match(partial):
@@ -115,7 +123,7 @@ def menu_match():
         if ret == "Full":
             partial = False
             break
-        if ret == "Partial":
+        elif ret == "Partial":
             partial = True
             break
         else:
@@ -124,12 +132,23 @@ def menu_match():
 
     return partial
 
-def update_rule(rule, ret):
+def select_folder(owa):
+
+    menu = []
+
+    for f in owa.account.inbox.walk():
+        menu.append(f.absolute.replace('/root/Top of Information Store/Inbox/',''))
+
+    ret = util.submenu(menu,"Select Folder")
+
+    return ret
+
+def update_rule(owa, rule, ret):
 
     if ret == 0:
         rule.name = input("Enter Rule Name: ")
     if ret == 1:
-        print("Implement folder selection...")
+        rule.folder = select_folder(owa)
         print(rule.folder)
         util.pause()
     if ret == 2:
@@ -181,7 +200,7 @@ def menu_show_filter(owa):
         if ret == "Go Back":
             menu_rules(owa)
 
-        update_rule(rule,ret)
+        rule = update_rule(owa, rule,ret)
 
         if ret == 8:
             owa.filters[idx] = rule
@@ -248,7 +267,7 @@ def menu_config(owa):
 
         if ret == 0:
             menu_account(owa)
-        if ret == 1:
+        elif ret == 1:
             menu_main(owa)
         else:
             print("Invalid Option!")
@@ -265,7 +284,7 @@ def menu_save():
 
         if ret == 'Yes':
             return ret
-        if ret == 'No':
+        elif ret == 'No':
             return ret
         else:
             print("Invalid Option!")
