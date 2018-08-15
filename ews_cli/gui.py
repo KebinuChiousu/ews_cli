@@ -1,5 +1,5 @@
 import os, sys
-from . import util
+from . import util, rules
 
 def menu_main(owa):
 
@@ -8,6 +8,7 @@ def menu_main(owa):
         _=os.system("clear")
 
         menu = [ "Filter Mail", 
+                 "Manage Filter Rules", 
                  "Show Unread Count", 
                  "Show Mail", 
                  "Show Exchange Tree", 
@@ -20,19 +21,172 @@ def menu_main(owa):
         if ret == 0:
             owa.filter_mail()
             util.pause()
-        elif ret == 1:
-            owa.show_unread_count()
+        if ret == 1:
+            menu_rules(owa)
         elif ret == 2:
-            owa.show_mail()
+            owa.show_unread_count()
         elif ret == 3:
-            owa.show_tree()
+            owa.show_mail()
         elif ret == 4:
-            menu_config(owa)
+            owa.show_tree()
         elif ret == 5:
+            menu_config(owa)
+        elif ret == 6:
             sys.exit(0)
         else:
             print("Invalid Option!")
             util.pause()
+
+def menu_rules(owa):
+
+    while True:
+
+        _=os.system("clear")
+
+        menu_idx = 1
+        menu = {}
+        menu[0] = "Add Rule"
+        if len(owa.filters) > 0:
+            menu[menu_idx] = "Edit Rules"
+            menu_idx = menu_idx + 1
+            menu[menu_idx] = "Save Rules"
+            menu_idx = menu_idx + 1
+        menu[menu_idx] = "Main Menu"
+
+        ret = util.submenu(menu, "Filtering Rules")
+
+        if ret == "Add Rule"
+            menu_add_filter(owa)
+        if ret == "Edit Rules":
+            menu_show_filter(owa)
+        if ret == "Save Rules":
+            owa.filters.save_rules()
+        if ret == "Main Menu":
+            menu_main(owa)
+        else:
+            print("Invalid Option!")
+            util.pause()
+
+def menu_add_filter(owa)
+
+    while True:
+
+        _=os.system("clear")
+        menu = []
+
+        rule = RuleFilter()
+
+        menu = [ util.get_entry('Name    : {0}',rule.name), 
+                 util.get_entry('Folder  : {0}',rule.folder), 
+                 util.get_entry('Sender  : {0}',rule.sender), 
+                 util.get_entry('From    : {0}',rule.author), 
+                 util.get_entry('To      : {0}',';'.join(rule.to_list)), 
+                 util.get_entry('Reply-To: {0}',rule.reply_to),
+                 util.get_entry('Subject : {0}',rule.subject),
+                 util.get_entry('Match   : {0}',get_match(rule.partial)),
+                 "Add Rule",
+                 "Prev Menu"
+               ]
+
+        ret = util.submenu(menu,"Add Rule",True)
+
+        update_rule(rule,ret)
+
+        if ret == 8:
+            owa.filters.add_filter(rule)
+            menu_rules(owa)
+        if ret == 9
+            menu_rules(owa)
+
+def get_match(partial):
+    if partial == True:
+        return 'partial'
+    else:
+        return 'full'
+
+def menu_match():
+
+    while True:
+
+        menu = [ 'Full', 'Partial' ]
+
+        ret = util.submenu(menu, "Match Type")
+
+        if ret == "Full":
+            partial = False
+            break
+        if ret == "Partial":
+            partial = True
+            break
+        else:
+            print("Invalid Option!")
+            util.pause()
+
+    return partial
+
+def update_rule(rule, ret):
+
+    if ret == 0:
+        rule.name = input("Enter Rule Name: ")
+    if ret == 1:
+        print("Implement folder selection...")
+        print(rule.folder)
+        util.pause()
+    if ret == 2:
+        rule.sender = input("Enter Sender: filter ")
+    if ret == 3:
+        rule.author = input("Enter From: filter ")
+    if ret == 4:
+        rule.to_list = input("Enter To: or CC: filter (split multiple entries with ;) ")
+    if ret == 5:
+        rule.reply_to = input("Enter Reply-To: filter ")
+    if ret == 6: 
+        rule.subject = input("Enter Subject: filter ")
+    if ret == 7:
+        rule.partial = menu_match()
+
+    return rule
+
+def menu_show_filter(owa):
+
+    idx = 0
+
+    while True:
+
+        _=os.system("clear")
+        menu = []
+
+        rule = owa.filters[idx]
+
+        menu = [ util.get_entry('Name    : {0}',rule.name), 
+                 util.get_entry('Folder  : {0}',rule.folder), 
+                 util.get_entry('Sender  : {0}',rule.sender), 
+                 util.get_entry('From    : {0}',rule.author), 
+                 util.get_entry('To      : {0}',';'.join(rule.to_list)), 
+                 util.get_entry('Reply-To: {0}',rule.reply_to),
+                 util.get_entry('Subject : {0}',rule.subject),
+                 util.get_entry('Match   : {0}',get_match(rule.partial)),
+                 "Update Rule",
+                 "Delete Rule"
+               ]
+
+        menu_name = "Edit Filter: {0} - {1}".format(idx+1,rule.name)
+
+        ret = util.submenu_nav(menu, menu_name,idx,len(owa.filters)-1, True,True)
+
+        if ret == "Next":
+            idx = idx + 1
+        if ret == "Prev":
+            idx = idx - 1
+        if ret == "Go Back":
+            menu_rules(owa)
+
+        update_rule(rule,ret)
+
+        if ret == 8:
+            owa.filters[idx] = rule
+        if ret == 9:
+            del owa.filters[idx]
 
 def menu_account(owa):
 

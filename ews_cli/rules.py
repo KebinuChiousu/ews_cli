@@ -4,6 +4,16 @@ from . import util, msg
 
 class RuleFilter:
 
+    def __init__(self):
+        self.name = ''
+        self.folder = ''
+        self.sender = ''
+        self.author = ''
+        self.to_list = []
+        self.reply_to = []
+        self.subject = ''
+        self.partial = False
+
     def __init__(self, name, folder, sender, author, to_list, reply_to, subject, partial):
         self.name = name
         self.folder = folder
@@ -18,6 +28,21 @@ class FilterCollection:
 
     def __init__(self):
         self.load_rules()
+
+    def __getitem__(self,index):
+        return self.filters[index]
+
+    def __setitem__(self,index,value):
+        self.filters[index] = value
+
+    def __delitem__(self,index):
+        del self.filters[index]
+
+    def __len__(self):
+        return len(self.filters)
+
+    def add_filter(rule):
+        self.filters.append(rule)
 
     def add_filter( self, name, folder, sender='', author='', to='', reply_to='', subject='', partial=False):
         to_list = to.split(';')
