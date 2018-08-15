@@ -58,7 +58,7 @@ def menu_rules(owa):
         if ret == "Add Rule":
             menu_add_filter(owa)
         elif ret == "Edit Rules":
-            menu_show_filter(owa)
+            menu_edit_filter(owa)
         elif ret == "Save Rules":
             owa.filters.save_rules()
         elif ret == "Main Menu":
@@ -140,7 +140,7 @@ def menu_add_filter(owa):
                  util.get_entry('Folder  : {0}',rule.folder),
                  util.get_entry('Sender  : {0}',rule.sender),
                  util.get_entry('From    : {0}',rule.author),
-                 util.get_entry('To      : {0}',rule.to)),
+                 util.get_entry('To      : {0}',rule.to),
                  util.get_entry('Reply-To: {0}',rule.reply_to),
                  util.get_entry('Subject : {0}',rule.subject),
                  util.get_entry('Match   : {0}',get_match(rule.partial)),
@@ -177,11 +177,11 @@ def menu_edit_filter(owa):
 
         rule = owa.filters[idx]
 
-        menu = [ util.get_entry('Name    : {0}',rule.name), 
-                 util.get_entry('Folder  : {0}',rule.folder), 
-                 util.get_entry('Sender  : {0}',rule.sender), 
-                 util.get_entry('From    : {0}',rule.author), 
-                 util.get_entry('To      : {0}',';'.join(rule.to_list)), 
+        menu = [ util.get_entry('Name    : {0}',rule.name),
+                 util.get_entry('Folder  : {0}',rule.folder),
+                 util.get_entry('Sender  : {0}',rule.sender),
+                 util.get_entry('From    : {0}',rule.author),
+                 util.get_entry('To      : {0}',rule.to),
                  util.get_entry('Reply-To: {0}',rule.reply_to),
                  util.get_entry('Subject : {0}',rule.subject),
                  util.get_entry('Match   : {0}',get_match(rule.partial)),
