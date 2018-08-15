@@ -48,7 +48,8 @@ class exchange_web_access:
                 while True:
                     self.filter_mail()
                     try:
-                        sleep(120) #Delay for 2 Minutes (120 seconds).
+                        print("Sleeping for 2 minutes")
+                        time.sleep(120) #Delay for 2 Minutes (120 seconds).
                     except KeyboardInterrupt:
                         sys.exit(0)
             else:
