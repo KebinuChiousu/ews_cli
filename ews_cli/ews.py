@@ -6,6 +6,7 @@ from configparser import SafeConfigParser
 from collections import defaultdict
 import keyring
 from datetime import datetime, timedelta
+import time
 import pytz
 from exchangelib import DELEGATE, IMPERSONATION, Account, Credentials, ServiceAccount, \
     EWSDateTime, EWSTimeZone, Configuration, NTLM, GSSAPI, CalendarItem, Message, \
@@ -44,8 +45,12 @@ class exchange_web_access:
         if ret == 0:
 
             if program_args.daemon:
-                print("Not Implemented")
-                sys.exit(2)
+                while True:
+                        self.filter_mail()
+                    try:
+                        sleep(120) #Delay for 2 Minutes (120 seconds).
+                    except KeyboardInterrupt:
+                        sys.exit(0)
             else:
                 try:
                     self.connect()
