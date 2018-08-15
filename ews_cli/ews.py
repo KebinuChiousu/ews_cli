@@ -46,7 +46,7 @@ class exchange_web_access:
 
             if program_args.daemon:
                 while True:
-                        self.filter_mail()
+                    self.filter_mail()
                     try:
                         sleep(120) #Delay for 2 Minutes (120 seconds).
                     except KeyboardInterrupt:
