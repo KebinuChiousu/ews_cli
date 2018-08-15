@@ -76,11 +76,11 @@ def menu_add_filter(owa):
         _=os.system("clear")
         menu = []
 
-        menu = [ util.get_entry('Name    : {0}',rule.name), 
-                 util.get_entry('Folder  : {0}',rule.folder), 
-                 util.get_entry('Sender  : {0}',rule.sender), 
-                 util.get_entry('From    : {0}',rule.author), 
-                 util.get_entry('To      : {0}',rule.to)), 
+        menu = [ util.get_entry('Name    : {0}',rule.name),
+                 util.get_entry('Folder  : {0}',rule.folder),
+                 util.get_entry('Sender  : {0}',rule.sender),
+                 util.get_entry('From    : {0}',rule.author),
+                 util.get_entry('To      : {0}',rule.to)),
                  util.get_entry('Reply-To: {0}',rule.reply_to),
                  util.get_entry('Subject : {0}',rule.subject),
                  util.get_entry('Match   : {0}',get_match(rule.partial)),
