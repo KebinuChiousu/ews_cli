@@ -128,12 +128,14 @@ class exchange_web_access:
         if self.account == None:
             self.connect()
 
+        self.account.inbox.refresh()
         total = self.account.inbox.total_count
         idx = 1
         if total > 0:
-            print("Getting mail in INBOX...")
+            print("Getting mail in INBOX...",flush=True)            
+            inbox_items =  self.account.inbox.all()
             status = "Process msg {0} of {1}"
-            for item in self.account.inbox.all():
+            for item in inbox_items:
                 print(status.format(idx,total),end='\r', flush=True)
                 folder = self.filters.process_msg(item)
                 if folder != '':
@@ -146,7 +148,7 @@ class exchange_web_access:
                         print('Error moving msg into folder.', flush=True)
                 idx = idx + 1
             print('\n')
-            self.account.inbox.refresh()
+            
 
     def show_mail(self):
         if self.account == None:
