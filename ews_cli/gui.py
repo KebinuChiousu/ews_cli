@@ -91,7 +91,10 @@ def select_folder(owa):
 
     menu = []
 
-    for f in owa.account.inbox.walk():
+    print("Getting List of Folders...", flush=True)
+    folders = owa.account.inbox.walk()
+
+    for f in folders:
         menu.append(f.absolute.replace('/root/Top of Information Store/Inbox/',''))
 
     ret = util.submenu(menu,"Select Folder")
@@ -104,14 +107,12 @@ def get_rule_input(owa, rule, ret):
         rule.name = input("Enter Rule Name: ")
     if ret == 1:
         rule.folder = select_folder(owa)
-        print(rule.folder)
-        util.pause()
     if ret == 2:
         rule.sender = input("Enter Sender: filter ")
     if ret == 3:
         rule.author = input("Enter From: filter ")
     if ret == 4:
-        rule.to_list = input("Enter To: or CC: filter (split multiple entries with ;) ")
+        rule.to = input("Enter To: or CC: filter (split multiple entries with ;) ")
     if ret == 5:
         rule.reply_to = input("Enter Reply-To: filter ")
     if ret == 6: 

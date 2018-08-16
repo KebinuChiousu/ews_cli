@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(name='ews-cli',
-      version='0.1.0.3',
+      version='0.1.0.4',
       description='Filter email via EWS endpoint',
       url='https://github.com/KebinuChiousu/ews_cli',
-      download_url='https://github.com/KebinuChiousu/ews_cli/archive/v0.1.0.3.tar.gz',
+      download_url='https://github.com/KebinuChiousu/ews_cli/archive/v0.1.0.4.tar.gz',
       author='Kevin Meredith',
       author_email='kevin@meredithkm.info',
       license='MIT',
