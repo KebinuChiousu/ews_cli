@@ -49,12 +49,12 @@ class exchange_web_access:
                     self.filter_mail()
                     try:
                         print("Sleeping for 5 minutes")
-                        for i in range(1,300,1):
+                        for i in range(1, 300, 1):
                             sec = timedelta(seconds=int(i))
-                            d = datetime(1,1,1) + sec
-                            print("%d:%02d" % (d.minute, d.second),end='\r',flush=True)
+                            d = datetime(1, 1, 1) + sec
+                            print("%d:%02d" % (d.minute, d.second), end='\r', flush=True)
                             time.sleep(1)
-                        print('',end='\n')
+                        print('', end='\n')
                     except KeyboardInterrupt:
                         sys.exit(0)
             else:
@@ -72,9 +72,9 @@ class exchange_web_access:
                         sys.exit(1)
 
     def connect(self):
-        
+
         print("Connecting to EWS...")
-        
+
         # Specify your credentials. Username is usually in WINDOMAIN\username format, where WINDOMAIN is
         # the name of the Windows Domain your username is connected to, but some servers also
         # accept usernames in PrimarySMTPAddress ('myusername@example.com') format (Office365 requires it).
@@ -106,23 +106,24 @@ class exchange_web_access:
         self.account.inbox.unread_count
         # Update the counters
         self.account.inbox.refresh()
-        # The folder structure is cached after first access. To clear the cache, refresh the root folder
+        # The folder structure is cached after first access. 
+        # To clear the cache, refresh the root folder
         # account.root.refresh()
 
         self.unread = self.account.inbox.unread_count
 
     def show_unread_count(self):
-
+        
         self.get_unread_count()
-        print(get_entry("Unread Messages: {0}",self.unread))
-        pause()
+        print(util.get_entry("Unread Messages: {0}",self.unread))
+        util.pause()
 
     def show_tree(self):
         if self.account == None:
             self.connect()
 
         print(self.account.inbox.tree())
-        pause()
+        util.pause()
 
     def filter_mail(self):
         if self.account == None:
@@ -132,23 +133,21 @@ class exchange_web_access:
         total = self.account.inbox.total_count
         idx = 1
         if total > 0:
-            print("Getting mail in INBOX...",flush=True)            
-            inbox_items =  self.account.inbox.all()
+            print("Getting mail in INBOX...", flush=True)
+            inbox_items = self.account.inbox.all()
             status = "Process msg {0} of {1}"
             for item in inbox_items:
-                print(status.format(idx,total),end='\r', flush=True)
+                print(status.format(idx, total), end='\r', flush=True)
                 folder = self.filters.process_msg(item)
                 if folder != '':
-                    fc = self.account.inbox.glob(folder)
-                    if len(fc) > 0:
-                        f = fc.folders[0]
+                    f = util.get_folder(self.account.inbox, folder)
+                    if f != None:
                         item.move(to_folder=f)
                     else:
                         print('\n')
-                        print('Error moving msg into folder.', flush=True)
+                        print(util.get_entry('Error moving msg into folder: {0}', folder), flush=True)
                 idx = idx + 1
             print('\n')
-            
 
     def show_mail(self):
         if self.account == None:
@@ -226,6 +225,3 @@ class exchange_web_access:
 
         with open(cfg, 'w') as f:
             config.write(f)
-
-
-

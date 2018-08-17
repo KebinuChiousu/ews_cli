@@ -133,3 +133,29 @@ def submenu(values,prompt,input_value=False):
                 _=os.system("clear")
 
     return ret
+
+def get_folder(folder, target):
+    ret = None
+    f = None
+    f2 = ''
+
+    if folder.absolute.replace('/root/Top of Information Store/Inbox/','') == target:
+        return folder
+
+    for f in folder.children:
+        f2 = f.absolute.replace('/root/Top of Information Store/Inbox/','')
+        if f2 in target:
+            break
+
+    if f2 == target:
+        ret = f
+    else:
+        if f == None:
+            return None
+        else:
+            ret = get_folder(f,target)
+
+    return ret
+
+
+
