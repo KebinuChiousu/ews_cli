@@ -1,3 +1,5 @@
+from . import util
+
 class header:
 
     def __init__(self, msg):
@@ -40,3 +42,13 @@ class header:
 
         if msg.reply_to != None:
             self.reply_to = msg.reply_to.email_address
+
+    def show_headers(self):
+        """ Show headers for debugging. """
+        print('Message Headers', flush=True)
+        print(util.get_entry('Subject : {0}', self.subject), flush=True)
+        print(util.get_entry('Sender  : {0}', self.sender), flush=True)
+        print(util.get_entry('From    : {0}', self.author), flush=True)
+        print(util.get_entry('To      : {0}', self.to_email), flush=True)
+        print(util.get_entry('CC      : {0}', self.cc_email), flush=True)
+        print(util.get_entry('Reply-To: {0}', self.reply_to), flush=True)
