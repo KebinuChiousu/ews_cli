@@ -123,7 +123,7 @@ class FilterCollection:
                         if rule.author in m.author:
                             return rule.folder
             # To: or CC:
-            if m.to_email != '':
+            if m.to_email != '' or m.cc_email != '':
                 if rule.to != '':
                     for to_email in m.to_or_cc_list:
                         to_list = rule.to.split(';')
