@@ -10,7 +10,7 @@ python3 python3-devel krb5-devel krb5-libs krb5-workstation
 
 ### Installation
 
-### Via pip
+#### Via pip
 
 To install the fanfic scraper, simply type this into your terminal (```sudo -EH``` might be necessary):
 
@@ -18,7 +18,7 @@ To install the fanfic scraper, simply type this into your terminal (```sudo -EH`
 pip install ews-cli
 ```
 
-### Via pip (local)
+#### Via pip (local)
 
 Clone a copy of the repository using the following command:
 
