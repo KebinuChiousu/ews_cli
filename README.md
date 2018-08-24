@@ -2,6 +2,12 @@
 
 Interact via ews via CLI. Also performs email filtering based on rules in non-interactive mode.
 
+#### Dependencies #### 
+
+This package requires the follow OS packages:
+
+python3 python3-devel krb5-devel krb5-libs krb5-workstation
+
 ### Installation
 
 ### Via pip
