@@ -1,3 +1,4 @@
+import os.path
 import yaml
 from collections import defaultdict
 from . import util, msg
@@ -39,35 +40,38 @@ class FilterCollection:
         self.filters = []
 
         cfg = util.get_config("filters.yaml")
-        stream = open(cfg, 'r')
 
-        flt = yaml.load(stream)
+        if os.path.isfile(cfg):
 
-        for data in flt:
+            stream = open(cfg, 'r')
 
-            name = data['filter_name']
-            folder = data['target_folder']
+            flt = yaml.load(stream)
 
-            header = data['header']
+            for data in flt:
 
-            sender = header['sender']
-            author = header['from']
-            to = header['to']
-            reply_to = header['reply_to']
-            subject = header['subject']
+                name = data['filter_name']
+                folder = data['target_folder']
 
-            if data['match'] == 'full':
-                partial = False
-            else:
-                partial = True
+                header = data['header']
 
-            self.add_filter(name,folder,sender,author,to,reply_to,subject,partial)
+                sender = header['sender']
+                author = header['from']
+                to = header['to']
+                reply_to = header['reply_to']
+                subject = header['subject']
 
-        try:
-            from . import rules_custom as rc
-            rc.load_custom(self)
-        except ImportError:
-            print('No Custom Rules Found... skipping...')
+                if data['match'] == 'full':
+                    partial = False
+                else:
+                    partial = True
+
+                self.add_filter(name,folder,sender,author,to,reply_to,subject,partial)
+
+            try:
+                from . import rules_custom as rc
+                rc.load_custom(self)
+            except ImportError:
+                print('No Custom Rules Found... skipping...')
 
     def save_rules(self):
         flt = []
