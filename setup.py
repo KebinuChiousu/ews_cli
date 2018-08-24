@@ -1,10 +1,12 @@
+""" PyPi package info """
+
 from setuptools import setup
 
 setup(name='ews-cli',
-      version='0.1.0.8',
+      version='0.1.0.9',
       description='Filter email via EWS endpoint',
       url='https://github.com/KebinuChiousu/ews_cli',
-      download_url='https://github.com/KebinuChiousu/ews_cli/archive/v0.1.0.8.tar.gz',
+      download_url='https://github.com/KebinuChiousu/ews_cli/archive/v0.1.0.9.tar.gz',
       author='Kevin Meredith',
       author_email='kevin@meredithkm.info',
       license='MIT',
@@ -24,10 +26,10 @@ setup(name='ews-cli',
       ],
       entry_points={
           'console_scripts': [
-          'owa-filter=ews_cli.cli:main',
-          'ews-filter=ews_cli.cli:main',
-          'ews-cli=ews_cli.cli:main'
-        ],
+              'owa-filter=ews_cli.cli:main',
+              'ews-filter=ews_cli.cli:main',
+              'ews-cli=ews_cli.cli:main'
+          ],
       },
       include_package_data=True,
       zip_safe=False)

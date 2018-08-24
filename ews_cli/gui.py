@@ -1,19 +1,24 @@
-import os, sys
+""" Menu Display Code """
+
+import os
+import sys
+import getpass
 from . import util, rules
 
 def menu_main(owa):
+    """ Main Menu """
 
     while True:
 
-        _=os.system("clear")
+        _ = os.system("clear")
 
-        menu = [ "Filter Mail", 
-                 "Manage Filter Rules", 
-                 "Show Unread Count", 
-                 "Show Mail", 
-                 "Show Exchange Tree", 
-                 "Configure Settings", 
-                 "Exit" 
+        menu = ["Filter Mail",
+                "Manage Filter Rules",
+                "Show Unread Count",
+                "Show Mail",
+                "Show Exchange Tree",
+                "Configure Settings",
+                "Exit"
                ]
 
         ret = util.submenu(menu, "EWS CLI - Main Menu", True)
@@ -38,15 +43,16 @@ def menu_main(owa):
             util.pause()
 
 def menu_rules(owa):
+    """ Manage Filter Rules """
 
     while True:
 
-        _=os.system("clear")
+        _ = os.system("clear")
 
         menu_idx = 1
         menu = {}
         menu[0] = "Add Rule"
-        if len(owa.filters) > 0:
+        if owa.filters:
             menu[menu_idx] = "Edit Rules"
             menu_idx = menu_idx + 1
             menu[menu_idx] = "Save Rules"
@@ -68,10 +74,11 @@ def menu_rules(owa):
             util.pause()
 
 def menu_match():
+    """ Email Filter Match Type """
 
     while True:
 
-        menu = [ 'Full', 'Partial' ]
+        menu = ['Full', 'Partial']
 
         ret = util.submenu(menu, "Match Type")
 
@@ -88,20 +95,22 @@ def menu_match():
     return partial
 
 def select_folder(owa):
+    """ Choose Email Folder to move filtered message into. """
 
     menu = []
 
     print("Getting List of Folders...", flush=True)
     folders = owa.account.inbox.walk()
 
-    for f in folders:
-        menu.append(f.absolute.replace('/root/Top of Information Store/Inbox/',''))
+    for fldr in folders:
+        menu.append(fldr.absolute.replace('/root/Top of Information Store/Inbox/', ''))
 
-    ret = util.submenu(menu,"Select Folder")
+    ret = util.submenu(menu, "Select Folder")
 
     return ret
 
 def get_rule_input(owa, rule, ret):
+    """ Handle input to create filter rule. """
 
     if ret == 0:
         rule.name = input("Enter Rule Name: ")
@@ -115,7 +124,7 @@ def get_rule_input(owa, rule, ret):
         rule.to = input("Enter To: or CC: filter (split multiple entries with ;) ")
     if ret == 5:
         rule.reply_to = input("Enter Reply-To: filter ")
-    if ret == 6: 
+    if ret == 6:
         rule.subject = input("Enter Subject: filter ")
     if ret == 7:
         rule.partial = menu_match()
@@ -123,76 +132,80 @@ def get_rule_input(owa, rule, ret):
     return rule
 
 def get_match(partial):
-    if partial == True:
+    """ Return str value for partial bool. """
+
+    if partial is True:
         return 'partial'
     else:
         return 'full'
 
 def menu_add_filter(owa):
+    """ Add Filter Menu """
 
-    rule = rules.RuleFilter('','','','','','','',False)
+    rule = rules.RuleFilter('', '', '', '', '', '', '', False)
 
     while True:
 
-        _=os.system("clear")
+        _ = os.system("clear")
         menu = []
 
-        menu = [ util.get_entry('Name    : {0}',rule.name),
-                 util.get_entry('Folder  : {0}',rule.folder),
-                 util.get_entry('Sender  : {0}',rule.sender),
-                 util.get_entry('From    : {0}',rule.author),
-                 util.get_entry('To      : {0}',rule.to),
-                 util.get_entry('Reply-To: {0}',rule.reply_to),
-                 util.get_entry('Subject : {0}',rule.subject),
-                 util.get_entry('Match   : {0}',get_match(rule.partial)),
-                 "Add Rule",
-                 "Prev Menu"
+        menu = [util.get_entry('Name    : {0}', rule.name),
+                util.get_entry('Folder  : {0}', rule.folder),
+                util.get_entry('Sender  : {0}', rule.sender),
+                util.get_entry('From    : {0}', rule.author),
+                util.get_entry('To      : {0}', rule.to),
+                util.get_entry('Reply-To: {0}', rule.reply_to),
+                util.get_entry('Subject : {0}', rule.subject),
+                util.get_entry('Match   : {0}', get_match(rule.partial)),
+                "Add Rule",
+                "Prev Menu"
                ]
 
-        ret = util.submenu(menu,"Add Rule",True)
+        ret = util.submenu(menu, "Add Rule", True)
 
-        rule = get_rule_input(owa, rule,ret)
+        rule = get_rule_input(owa, rule, ret)
 
         if ret == 8:
-            owa.filters.add_filter( rule.name,
-                                    rule.folder,
-                                    rule.sender,
-                                    rule.author,
-                                    rule.to,
-                                    rule.reply_to,
-                                    rule.subject,
-                                    rule.partial
+            owa.filters.add_filter(rule.name,
+                                   rule.folder,
+                                   rule.sender,
+                                   rule.author,
+                                   rule.to,
+                                   rule.reply_to,
+                                   rule.subject,
+                                   rule.partial
                                   )
             menu_rules(owa)
         if ret == 9:
             menu_rules(owa)
 
 def menu_edit_filter(owa):
+    """ Edit Filter Menu """
 
     idx = 0
 
     while True:
 
-        _=os.system("clear")
+        _ = os.system("clear")
         menu = []
 
         rule = owa.filters[idx]
 
-        menu = [ util.get_entry('Name    : {0}',rule.name),
-                 util.get_entry('Folder  : {0}',rule.folder),
-                 util.get_entry('Sender  : {0}',rule.sender),
-                 util.get_entry('From    : {0}',rule.author),
-                 util.get_entry('To      : {0}',rule.to),
-                 util.get_entry('Reply-To: {0}',rule.reply_to),
-                 util.get_entry('Subject : {0}',rule.subject),
-                 util.get_entry('Match   : {0}',get_match(rule.partial)),
-                 "Update Rule",
-                 "Delete Rule"
+        menu = [util.get_entry('Name    : {0}', rule.name),
+                util.get_entry('Folder  : {0}', rule.folder),
+                util.get_entry('Sender  : {0}', rule.sender),
+                util.get_entry('From    : {0}', rule.author),
+                util.get_entry('To      : {0}', rule.to),
+                util.get_entry('Reply-To: {0}', rule.reply_to),
+                util.get_entry('Subject : {0}', rule.subject),
+                util.get_entry('Match   : {0}', get_match(rule.partial)),
+                "Update Rule",
+                "Delete Rule"
                ]
 
-        menu_name = "Edit Filter: {0} - {1}".format(idx+1,rule.name)
+        menu_name = "Edit Filter: {0} - {1}".format(idx+1, rule.name)
 
-        ret = util.submenu_nav(menu, menu_name,idx,len(owa.filters)-1, True,True)
+        ret = util.submenu_nav(menu, menu_name, idx, len(owa.filters)-1, True, True)
 
         if ret == "Next":
             idx = idx + 1
@@ -201,7 +214,7 @@ def menu_edit_filter(owa):
         if ret == "Go Back":
             menu_rules(owa)
 
-        rule = get_rule_input(owa, rule,ret)
+        rule = get_rule_input(owa, rule, ret)
 
         if ret == 8:
             owa.filters[idx] = rule
@@ -209,21 +222,22 @@ def menu_edit_filter(owa):
             del owa.filters[idx]
 
 def menu_account(owa):
+    """ EWS Account Config Menu """
 
     owa.dirty = False
 
     while True:
 
-        _=os.system("clear")
+        _ = os.system("clear")
 
-        menu = [ util.get_entry('Server: {0}',owa.server),
-                 util.get_entry('Domain: {0}',owa.domain),
-                 util.get_entry('Email: {0}',owa.email),
-                 util.get_entry('User: {0}',owa.user),
-                 util.get_entry('Password Set: {0}', owa.has_password),
-                 'Save Changes',
-                 'Config Menu'
-                ]
+        menu = [util.get_entry('Server: {0}', owa.server),
+                util.get_entry('Domain: {0}', owa.domain),
+                util.get_entry('Email: {0}', owa.email),
+                util.get_entry('User: {0}', owa.user),
+                util.get_entry('Password Set: {0}', owa.has_password),
+                'Save Changes',
+                'Config Menu'
+               ]
 
         ret = util.submenu(menu, "EWS Account Setup", True)
 
@@ -257,12 +271,13 @@ def menu_account(owa):
             util.pause()
 
 def menu_config(owa):
+    """ Config Menu """
 
     while True:
 
-        _=os.system("clear")
+        _ = os.system("clear")
 
-        menu = [ "EWS Account Setup", "Main Menu" ]
+        menu = ["EWS Account Setup", "Main Menu"]
 
         ret = util.submenu(menu, "Configure Settings", True)
 
@@ -275,10 +290,11 @@ def menu_config(owa):
             util.pause()
 
 def menu_save():
+    """ Prompt to save changes """
 
     while True:
 
-        _=os.system("clear")
+        _ = os.system("clear")
 
         menu = ['Yes', 'No']
         ret = util.submenu(menu, "Save Changes?")
