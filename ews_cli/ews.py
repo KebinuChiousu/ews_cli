@@ -4,20 +4,16 @@ import os
 import sys
 import traceback
 from configparser import SafeConfigParser
-from datetime import datetime, timedelta
-import time
 import keyring
-from exchangelib import DELEGATE, IMPERSONATION, Account, Credentials, ServiceAccount, EWSDateTime  # pylint: disable=W0611
-from exchangelib import EWSTimeZone, Configuration, NTLM, GSSAPI, CalendarItem, Message, Mailbox    # pylint: disable=W0611
-from exchangelib import Attendee, Q, ExtendedProperty, FileAttachment, ItemAttachment, HTMLBody     # pylint: disable=W0611
-from exchangelib import Build, Version, FolderCollection, Folder                                    # pylint: disable=W0611
-
-from . import gui, util, msg, rules
+from exchangelib import DELEGATE, Account, Credentials
+from exchangelib import EWSTimeZone, Configuration, NTLM
+from . import menu, cui, util, msg, rules
 
 # exchangelib usage and info: GitHub repo.
 # https://github.com/ecederstrand/exchangelib
 
 KEYRING_SERVICE_NAME = 'outlook_web_access'
+
 
 class ExchangeWebAccess:
     """ Main Application Class """
@@ -40,7 +36,7 @@ class ExchangeWebAccess:
                 print('ERROR: No Valid Config Found! Exiting...')
                 sys.exit(1)
             else:
-                gui.menu_account(self)
+                menu.menu_account(self)
 
         if ret == 0:
 
@@ -49,23 +45,18 @@ class ExchangeWebAccess:
                     self.filter_mail()
                     try:
                         print("Sleeping for 5 minutes")
-                        for i in range(1, 300, 1):
-                            sec = timedelta(seconds=int(i))
-                            d = datetime(1, 1, 1) + sec         # pylint: disable=C0103
-                            print("%d:%02d" % (d.minute, d.second), end='\r', flush=True)
-                            time.sleep(1)
-                        print('', end='\n')
+                        util.sleep(300)
                     except KeyboardInterrupt:
                         sys.exit(0)
             else:
                 try:
                     self.connect()
-                    gui.menu_main(self)
-                except Exception as ex:                                  # pylint: disable=W0703
+                    menu.menu_main(self)
+                except Exception as ex:
                     if self.account is None:
                         print(ex)
                         util.pause()
-                        gui.menu_account(self)
+                        menu.menu_account(self)
                     else:
                         traceback.print_exc(file=sys.stdout)
                         util.pause()
@@ -76,28 +67,34 @@ class ExchangeWebAccess:
 
         print("Connecting to EWS...")
 
-        # Specify your credentials. Username is usually in WINDOMAIN\username format,
-        # where WINDOMAIN is the name of the Windows Domain your username is connected to, but
-        # some servers also accept usernames in PrimarySMTPAddress ('myusername@example.com')
-        # format (Office365 requires it). UPN format is also supported, if your server expects that.
-        self.credentials = Credentials(username='{0}\\{1}'.format(self.domain, self.user),
-                                       password=self.password)
+        # Specify your credentials. Username is usually in WINDOMAIN\username
+        # format, where WINDOMAIN is the name of the Windows Domain your
+        # username is connected to, but some servers also accept usernames in
+        # PrimarySMTPAddress ('myusername@example.com') format (Office365
+        # requires it). UPN format is also supported, if your server expects
+        # that.
+        self.credentials = Credentials(username='{0}\\{1}'.format(self.domain,
+                                       self.user), password=self.password)
 
-        # If the server doesn't support autodiscover, or you want to avoid the overhead of
-        # autodiscover, use a Configuration object to set the server location instead:
+        # If the server doesn't support autodiscover, or you want to avoid the
+        # overhead of autodiscover, use a Configuration object to set the
+        # server location instead:
         self.config = Configuration(server=self.server,
-                                    credentials=self.credentials, auth_type=NTLM)
-        self.account = Account(primary_smtp_address=self.email, config=self.config,
-                               autodiscover=False, access_type=DELEGATE)
+                                    credentials=self.credentials,
+                                    auth_type=NTLM)
+        self.account = Account(primary_smtp_address=self.email,
+                               config=self.config, autodiscover=False,
+                               access_type=DELEGATE)
 
-        # If you're connecting to the same account very often, you can cache the autodiscover
-        # result for later so you can skip the autodiscover lookup:
+        # If you're connecting to the same account very often, you can cache
+        # the autodiscover result for later so you can skip the autodiscover
+        # lookup:
         self.ews_url = self.account.protocol.service_endpoint
         self.ews_auth_type = self.account.protocol.auth_type
         self.primary_smtp_address = self.account.primary_smtp_address
 
         # You can also get the local timezone defined in your operating system
-        self.tz = EWSTimeZone.localzone()                                       # pylint: disable=C0103
+        self.tz = EWSTimeZone.localzone()
 
     def get_unread_count(self):
         """ Get unread email count. """
@@ -105,16 +102,16 @@ class ExchangeWebAccess:
         if self.account is None:
             self.connect()
 
-        self.account.inbox.total_count                                          # pylint: disable=E1101,W0104
-        self.account.inbox.child_folder_count                                   # pylint: disable=E1101,W0104
-        self.account.inbox.unread_count                                         # pylint: disable=E1101,W0104
+        self.account.inbox.total_count
+        self.account.inbox.child_folder_count
+        self.account.inbox.unread_count
         # Update the counters
-        self.account.inbox.refresh()                                            # pylint: disable=E1101
+        self.account.inbox.refresh()
         # The folder structure is cached after first access.
         # To clear the cache, refresh the root folder
         # account.root.refresh()
 
-        self.unread = self.account.inbox.unread_count               # pylint: disable=E1101
+        self.unread = self.account.inbox.unread_count
 
     def show_unread_count(self):
         """ Display Unread email count. """
@@ -127,7 +124,7 @@ class ExchangeWebAccess:
         if self.account is None:
             self.connect()
 
-        print(self.account.inbox.tree())                            # pylint: disable=E1101
+        print(self.account.inbox.tree())
         util.pause()
 
     def filter_mail(self):
@@ -135,12 +132,12 @@ class ExchangeWebAccess:
         if self.account is None:
             self.connect()
 
-        self.account.inbox.refresh()                               # pylint: disable=E1101
-        total = self.account.inbox.total_count                     # pylint: disable=E1101
+        self.account.inbox.refresh()
+        total = self.account.inbox.total_count
         idx = 1
         if total > 0:
             print("Getting mail in INBOX...", flush=True)
-            inbox_items = self.account.inbox.all()                 # pylint: disable=E1101
+            inbox_items = self.account.inbox.all()
             status = "Process msg {0} of {1}"
             for item in inbox_items:
                 print(status.format(idx, total), end='\r', flush=True)
@@ -151,8 +148,8 @@ class ExchangeWebAccess:
                         item.move(to_folder=f_inst)
                     else:
                         print('\n')
-                        print(util.get_entry('Error moving msg into folder: {0}', folder),
-                              flush=True)
+                        msg = 'Error moving msg into folder: {0}'
+                        print(cui.get_entry(msg, folder), flush=True)
                 idx = idx + 1
             print('\n')
 
@@ -161,13 +158,12 @@ class ExchangeWebAccess:
         if self.account is None:
             self.connect()
 
-        total = self.account.inbox.total_count                    # pylint: disable=E1101
+        total = self.account.inbox.total_count
         idx = 1
         if total > 0:
             print("Getting mail in INBOX...", flush=True)
             status = "Displaying msg {0} of {1}"
-            for item in self.account.inbox.all():                 # pylint: disable=E1101
-                print(status.format(idx, total), flush=True)
+            for item in self.account.inbox.all():
                 hdr = msg.Header(item)
                 self.print_header(hdr)
                 util.pause()
@@ -203,7 +199,8 @@ class ExchangeWebAccess:
             self.user = config.get('setup', 'user')
 
             keyring.get_keyring()
-            self.password = keyring.get_password(KEYRING_SERVICE_NAME, 'password')
+            self.password = keyring.get_password(KEYRING_SERVICE_NAME,
+                                                 'password')
 
             if self.password != '':
                 self.has_password = True
