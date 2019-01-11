@@ -1,6 +1,7 @@
 """ Store email headers in easy to use class. """
 
-from . import util
+from . import cui
+
 
 class Header:
     """ Store Email Headers """
@@ -31,16 +32,18 @@ class Header:
         if msg.to_recipients is not None:
 
             for eml in msg.to_recipients:
-                self.to_list.append(eml.email_address)
+                if eml.email_address is not None:
+                    self.to_list.append(eml.email_address)
 
             self.to_email = self.sep.join(self.to_list)
 
         if msg.cc_recipients is not None:
 
             for eml in msg.cc_recipients:
-                self.cc_list.append(eml.email_address)
+                if eml.email_address is not None:
+                    self.cc_list.append(eml.email_address)
 
-        self.cc_email = self.sep.join(self.cc_list)
+            self.cc_email = self.sep.join(self.cc_list)
 
         self.to_or_cc_list = self.to_list + self.cc_list
 
@@ -50,9 +53,9 @@ class Header:
     def show_headers(self):
         """ Show headers for debugging. """
         print('Message Headers', flush=True)
-        print(util.get_entry('Subject : {0}', self.subject), flush=True)
-        print(util.get_entry('Sender  : {0}', self.sender), flush=True)
-        print(util.get_entry('From    : {0}', self.author), flush=True)
-        print(util.get_entry('To      : {0}', self.to_email), flush=True)
-        print(util.get_entry('CC      : {0}', self.cc_email), flush=True)
-        print(util.get_entry('Reply-To: {0}', self.reply_to), flush=True)
+        print(cui.get_entry('Subject : {0}', self.subject), flush=True)
+        print(cui.get_entry('Sender  : {0}', self.sender), flush=True)
+        print(cui.get_entry('From    : {0}', self.author), flush=True)
+        print(cui.get_entry('To      : {0}', self.to_email), flush=True)
+        print(cui.get_entry('CC      : {0}', self.cc_email), flush=True)
+        print(cui.get_entry('Reply-To: {0}', self.reply_to), flush=True)

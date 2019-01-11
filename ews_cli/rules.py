@@ -4,18 +4,21 @@ import os.path
 import yaml
 from . import util, msg
 
+
 class RuleFilter:
     """ Class to hold Rule information """
 
-    def __init__(self, name, folder, sender, author, to, reply_to, subject, partial):
+    def __init__(self, name, folder, sender,
+                 author, to, reply_to, subject, partial):
         self.name = name
         self.folder = folder
         self.sender = sender
         self.author = author
-        self.to = to                  # pylint: disable=C0103
+        self.to = to
         self.reply_to = reply_to
         self.subject = subject
         self.partial = partial
+
 
 class FilterCollection:
     """ A collection of Rule Filters """
@@ -35,11 +38,12 @@ class FilterCollection:
     def __len__(self):
         return len(self.filters)
 
-    def add_filter(self, name, folder, sender='', author='', to='',                        #pylint: disable=R0913,C0103
+    def add_filter(self, name, folder, sender='', author='', to='',
                    reply_to='', subject='', partial=False):
         """ Add RuleFilter to Collection """
 
-        flt = RuleFilter(name, folder, sender, author, to, reply_to, subject, partial)
+        flt = RuleFilter(name, folder, sender, author,
+                         to, reply_to, subject, partial)
         self.filters.append(flt)
 
     def load_rules(self):
@@ -63,7 +67,7 @@ class FilterCollection:
 
                 sender = header['sender']
                 author = header['from']
-                to = header['to']                                                           # pylint: disable=C0103
+                to = header['to']
                 reply_to = header['reply_to']
                 subject = header['subject']
 
@@ -72,7 +76,8 @@ class FilterCollection:
                 else:
                     partial = True
 
-                self.add_filter(name, folder, sender, author, to, reply_to, subject, partial)
+                self.add_filter(name, folder, sender, author,
+                                to, reply_to, subject, partial)
 
             try:
                 from . import rules_custom as rc
