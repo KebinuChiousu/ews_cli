@@ -7,7 +7,6 @@ from configparser import SafeConfigParser
 import keyring
 from exchangelib import DELEGATE, Account, Credentials
 from exchangelib import EWSTimeZone, Configuration, NTLM
-from exchangelib import errors
 from . import menu, cui, util, msg, rules
 
 # exchangelib usage and info: GitHub repo.
