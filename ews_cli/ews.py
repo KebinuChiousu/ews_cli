@@ -7,6 +7,7 @@ from configparser import SafeConfigParser
 import keyring
 from exchangelib import DELEGATE, Account, Credentials
 from exchangelib import EWSTimeZone, Configuration, NTLM
+from exchangelib import errors
 from . import menu, cui, util, msg, rules
 
 # exchangelib usage and info: GitHub repo.
@@ -143,6 +144,10 @@ class ExchangeWebAccess:
                 print(status.format(idx, total), end='\r', flush=True)
                 folder = self.filters.process_msg(item)
                 if folder != '':
+                    self.account.root.refresh()
+                    f_inst = util.get_folder(self.account.inbox, folder)
+                    if f_inst is None:
+                        util.create_folder(self.account, folder)
                     f_inst = util.get_folder(self.account.inbox, folder)
                     if f_inst is not None:
                         item.move(to_folder=f_inst)

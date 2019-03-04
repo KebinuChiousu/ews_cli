@@ -1,6 +1,8 @@
 import os
 from datetime import datetime, timedelta
 import time
+from exchangelib import errors, Folder
+from . import cui
 
 EXCHANGE_ROOT = '/root/Top of Information Store/Inbox/'
 
@@ -18,6 +20,52 @@ def ensure_dir(path):
     # Create directory if it doesn't exist.
     if not os.path.exists(path):
         os.makedirs(path)
+
+
+def create_folder(account, folder):
+    folders = folder.split("/")
+    account.root.refresh()
+    f_inst = get_folder(account.inbox, folder)
+    if f_inst is None:
+        check = get_folder(account.inbox, folders[0])
+        if check is None:
+            f = Folder(parent=account.inbox, name=folders[0])
+            f.save()
+            f = None
+
+    parent = folders[0]
+    folders.pop(0)
+    create_subfolder(account, parent, "/".join(folders))
+
+
+def create_subfolder(account, parent, folder):
+    folders = folder.split("/")
+
+    # Any subfolders left to process?
+    if folders[0] != "":
+
+        # Refresh Inbox
+        account.root.refresh()
+
+        # Check for Folder
+        check = get_folder(account.inbox, parent + "/" + folders[0])
+        p_folder = get_folder(account.inbox, parent)
+
+        if check is None:
+            # Folder doesn't exist
+            try:
+                f = Folder(parent=p_folder, name=folders[0])
+                f.save()
+                f = None
+            except errors.ErrorFolderExists:
+                print("Tried to create folder: " + parent + "/" + folders[0])
+                print("It already exists!")
+                cui.pause()
+
+        # Process Next SubFolder
+        parent = parent + "/" + folders[0]
+        folders.pop(0)
+        create_subfolder(account, parent, "/".join(folders))
 
 
 def get_folder(folder, target):
