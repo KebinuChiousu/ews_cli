@@ -261,11 +261,17 @@ def menu_account(owa):
             owa.user = input("Enter User: ")
             owa.dirty = True
         elif ret == 4:
-            owa.password = getpass.getpass("Enter Password: ")
-            owa.has_password = True
+            pass1 = getpass.getpass("Enter Password: ")
+            pass2 = getpass.getpass("Verify Password: ")
+            if pass1 == pass2:
+                owa.password = pass1
+                owa.has_password = True
+            else:
+                owa.password = ""
+                owa.has_password = False
         elif ret == 5:
             owa.config_save()
-            util.pause()
+            cui.pause()
             menu_config(owa)
         elif ret == 6:
             if owa.dirty:
