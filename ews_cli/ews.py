@@ -55,11 +55,11 @@ class ExchangeWebAccess:
                 except Exception as ex:
                     if self.account is None:
                         print(ex)
-                        util.pause()
+                        cui.pause()
                         menu.menu_account(self)
                     else:
                         traceback.print_exc(file=sys.stdout)
-                        util.pause()
+                        cui.pause()
                         sys.exit(1)
 
     def connect(self):
@@ -117,7 +117,7 @@ class ExchangeWebAccess:
         """ Display Unread email count. """
         self.get_unread_count()
         print(util.get_entry("Unread Messages: {0}", self.unread))
-        util.pause()
+        cui.pause()
 
     def show_tree(self):
         """ Show Email Folders """
@@ -125,7 +125,7 @@ class ExchangeWebAccess:
             self.connect()
 
         print(self.account.inbox.tree())
-        util.pause()
+        cui.pause()
 
     def filter_mail(self):
         """ Filter email """
@@ -170,7 +170,7 @@ class ExchangeWebAccess:
             for item in self.account.inbox.all():
                 hdr = msg.Header(item)
                 self.print_header(hdr)
-                util.pause()
+                cui.pause()
                 idx = idx + 1
                 os.system("clear")
 
